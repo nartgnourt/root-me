@@ -30,3 +30,33 @@ Với trình duyệt Firefox, chúng ta có thể mở Web Developer Tools và s
 Gửi request, chúng ta thấy password xuất hiện.
 
 ![image](images/http-ip-filtering-bypass/image-2.png)
+
+## HTTP - Open redirect
+
+Một trang web giản đơn với 3 nút Facebook, Twitter và Slack.
+
+![image](images/http-open-redirect/image-1.png)
+
+Nếu chúng ta nhấn chọn 1 trong 3 nút này sẽ được điều hướng tới trang web tương ứng. Bên dưới là request khi chúng ta nhấn vào nút Facebook.
+
+![image](images/http-open-redirect/image-2.png)
+
+Có thể thấy phần query string được thêm vào URL, nó có 2 tham số là `url` và `h`. Thực hiện điều hướng sử dụng `document.location`.
+
+Điểm đáng chú ý là tham số `h` chứa giá trị MD5 hash của giá trị trong `url`. Chúng ta dễ dàng kiểm tra được nhờ sử dụng [Hash text - IT tools](https://it-tools.tech/hash-text).
+
+![image](images/http-open-redirect/image-3.png)
+
+Vậy, thử đổi `https://facebook.com` thành một giá trị bất kỳ, ví dụ như số `1`. Ngay lập tức, chúng ta nhận được một thông báo lỗi "Incorrect hash!".
+
+![image](images/http-open-redirect/image-4.png)
+
+Điều đó chứng tỏ rằng ở phía server đang thực hiện tính toán MD5 hash giá trị của tham số `url` và so sánh nó với hash nằm ở tham số `h`. Nếu đúng mới trả về thẻ `<script>`.
+
+Vậy nên chúng ta cần tính giá trị MD5 hash của `1` để truyền vào tham số `h`.
+
+![image](images/http-open-redirect/image-5.png)
+
+Có lẽ server kiểm tra nếu giá trị của `url` không phải là 1 trong 3 URLs tới Facebook, Twitter, Slack và giá trị hash hợp lệ thì trả về flag cho chúng ta.
+
+![image](images/http-open-redirect/image-6.png)

@@ -12,24 +12,24 @@ Tại đây, mình sẽ viết lại cách mà mình đã thực hiện để c�
 
 Cảm ơn vì đã ghé thăm! 🌱
 
-## HTML - Code source
+## HTML - Source code
 
 Mở đầu với một thử thách đơn giản, chúng ta sẽ nhấn tổ hợp phím `Command + U` trên Mac (hoặc `Ctrl + U` trên Windows) để có thể xem HTML source code của trang web. Từ đó, chúng ta sẽ lấy được password trong phần comment.
 
 ![image](images/html-source-code/image-1.png)
 
-## HTTP - IP Filtering Bypass
+## HTTP - IP restriction bypass
 
 Khi bắt đầu thử thách, chúng ta thấy trang web hiện lên thông báo rằng địa chỉ IP của chúng ta không thuộc mạng LAN và yêu cầu xác thực.
 
-![image](images/http-ip-filtering-bypass/image-1.png)
+![image](images/http-ip-restriction-bypass/image-1.png)
 
 Tuy nhiên, sẽ ra sao nếu chúng ta giả mạo địa chỉ IP nội bộ bằng cách thêm vào một request header như `X-Forwarded-For: 192.168.0.1`.
 Với trình duyệt Firefox, chúng ta có thể mở Web Developer Tools và sửa đổi request ở tab Network.
 
 Gửi request, chúng ta thấy password xuất hiện.
 
-![image](images/http-ip-filtering-bypass/image-2.png)
+![image](images/http-ip-restriction-bypass/image-2.png)
 
 ## HTTP - Open redirect
 
@@ -60,3 +60,13 @@ Vậy nên chúng ta cần tính giá trị MD5 hash của `1` để truyền v�
 Có lẽ server kiểm tra nếu giá trị của `url` không phải là 1 trong 3 URLs tới Facebook, Twitter, Slack và giá trị hash hợp lệ thì trả về flag cho chúng ta.
 
 ![image](images/http-open-redirect/image-6.png)
+
+## HTTP - User-agent
+
+Trang web thông báo user-agent của chúng ta không phải là admin.
+
+![image](images/http-user-agent/image-1.png)
+
+Do vậy, chúng ta chỉ cần sửa giá trị của header `User-Agent` thành `admin` và gửi request là có được password.
+
+![image](images/http-user-agent/image-2.png)

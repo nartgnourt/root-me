@@ -70,3 +70,13 @@ Trang web thông báo user-agent của chúng ta không phải là admin.
 Do vậy, chúng ta chỉ cần sửa giá trị của header `User-Agent` thành `admin` và gửi request là có được password.
 
 ![image](images/http-user-agent/image-2.png)
+
+## Weak password
+
+Trang web yêu cầu chúng ta đăng nhập.
+
+![image](images/weak-password/image-1.png)
+
+Như tên thử thách, chúng ta có thể thử đăng nhập với tài khoản và mật khẩu dễ đoán. Tại đây, đăng nhập với `admin:admin` chúng ta được phép truy cập trang web.
+
+![image](images/weak-password/image-2.png)

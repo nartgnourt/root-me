@@ -23,6 +23,14 @@ Mở đầu với một thử thách đơn giản, chúng ta sẽ nhấn tổ h�
 ## HTTP - IP restriction bypass
 
 > Only local users will be able to access the page
+>
+> Dear colleagues,
+>
+> We’re now managing connections to the intranet using private IP addresses, so it’s no longer necessary to login with a username / password when you are already connected to the internal company network.
+>
+> Regards,
+>
+> The network admin
 
 Khi bắt đầu thử thách, chúng ta thấy trang web hiện lên thông báo rằng địa chỉ IP của chúng ta không thuộc mạng LAN và yêu cầu xác thực.
 
@@ -38,6 +46,8 @@ Gửi request, chúng ta thấy password xuất hiện.
 ## HTTP - Open redirect
 
 > Internet is so big
+>
+> Find a way to make a redirection to a domain other than those showed on the web page.
 
 Một trang web giản đơn với 3 nút Facebook, Twitter và Slack.
 
@@ -90,3 +100,31 @@ Trang web yêu cầu chúng ta đăng nhập.
 Như tên thử thách, chúng ta có thể thử đăng nhập với tài khoản và mật khẩu dễ đoán. Tại đây, đăng nhập với `admin:admin` chúng ta được phép truy cập trang web.
 
 ![image](images/weak-password/image-2.png)
+
+## PHP - Command injection
+
+> Ping service v1
+>
+> Find a vulnerabilty in this service and exploit it.
+>
+> You must manage to read index.php
+
+Theo như tên của thử thách cùng với mô tả, chúng ta biết rằng trang web này dính lỗ hổng OS Command Injection và chúng ta cần đọc file `index.php`.
+
+Trang web cho phép chúng ta nhập vào ip sau đó nó sẽ thực hiện câu lệnh `ping` tới ip đó.
+
+![image](images/php-command-injection/image-1.png)
+
+Chúng ta có thể sử dụng [Burp Suite](https://portswigger.net/burp) để chỉnh sửa request cũng như quan sát response dễ dàng hơn.
+
+Chúng ta sẽ dùng dấu `;` để thực thi được liên tiếp các lệnh. Với payload `; ls`, chúng ta xác định được có file `index.php` ở thư mục hiện tại.
+
+![image](images/php-command-injection/image-2.png)
+
+Và để đọc nội dung của file `index.php`, chúng ta có thể dùng payload `; cat index.php`.
+
+![image](images/php-command-injection/image-3.png)
+
+Vậy là flag ở trong file `.passwd`, chúng ta dùng payload `; cat .passwd` để lấy flag.
+
+![image](images/php-command-injection/image-4.png)

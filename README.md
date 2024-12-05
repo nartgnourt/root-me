@@ -14,11 +14,15 @@ Cảm ơn vì đã ghé thăm! 🌱
 
 ## HTML - Source code
 
+> Don't search too far
+
 Mở đầu với một thử thách đơn giản, chúng ta sẽ nhấn tổ hợp phím `Command + U` trên Mac (hoặc `Ctrl + U` trên Windows) để có thể xem HTML source code của trang web. Từ đó, chúng ta sẽ lấy được password trong phần comment.
 
 ![image](images/html-source-code/image-1.png)
 
 ## HTTP - IP restriction bypass
+
+> Only local users will be able to access the page
 
 Khi bắt đầu thử thách, chúng ta thấy trang web hiện lên thông báo rằng địa chỉ IP của chúng ta không thuộc mạng LAN và yêu cầu xác thực.
 
@@ -32,6 +36,8 @@ Gửi request, chúng ta thấy password xuất hiện.
 ![image](images/http-ip-restriction-bypass/image-2.png)
 
 ## HTTP - Open redirect
+
+> Internet is so big
 
 Một trang web giản đơn với 3 nút Facebook, Twitter và Slack.
 
@@ -63,6 +69,8 @@ Có lẽ server kiểm tra nếu giá trị của `url` không phải là 1 tron
 
 ## HTTP - User-agent
 
+> Admin is really dumb...
+
 Trang web thông báo user-agent của chúng ta không phải là admin.
 
 ![image](images/http-user-agent/image-1.png)
@@ -72,6 +80,8 @@ Do vậy, chúng ta chỉ cần sửa giá trị của header `User-Agent` thàn
 ![image](images/http-user-agent/image-2.png)
 
 ## Weak password
+
+> Nothing too difficult
 
 Trang web yêu cầu chúng ta đăng nhập.
 

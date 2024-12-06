@@ -128,3 +128,37 @@ Và để đọc nội dung của file `index.php`, chúng ta có thể dùng pa
 Vậy là flag ở trong file `.passwd`, chúng ta dùng payload `; cat .passwd` để lấy flag.
 
 ![image](images/php-command-injection/image-4.png)
+
+## API - Broken Access
+
+> Follow the Swagger!
+>
+> Your friend has set up a platform where you can register and post a private note. Everything is based on an API. Before setting up the Front-End, he asked you to check that everything was secure.
+
+Truy cập vào trang chủ, chúng ta thấy giao diện API Documentation được tạo ra bằng Swagger. Nó giúp chúng ta dễ dàng biết và sử dụng được các chức năng mà API cung cấp.
+
+![image](images/api-broken-access/image-1.png)
+
+Trước tiên, tạo một tài khoản tại endpoint `/api/signup`.
+
+![image](images/api-broken-access/image-2.png)
+
+Tạo tài khoản thành công, chúng ta thực hiện đăng nhập tại endpoint `/api/login`. Để ý được cấp cookie `session`, chúng ta sẽ dùng cookie này để có quyền truy cập vào 2 endpoints còn lại.
+
+![image](images/api-broken-access/image-3.png)
+
+Tại endpoint `/api/note`, chúng ta có chức năng cập nhật note.
+
+![image](images/api-broken-access/image-4.png)
+
+Và với endpoint cuối cùng `/api/user`, chúng ta xem được 3 thông tin là `note`, `userid` và `username`.
+
+Tuy nhiên, điểm đáng chú ý tại endpoint này là `userid` có giá trị là `2`. Vậy người dùng với `userid` là `1` sẽ là ai?
+
+![image](images/api-broken-access/image-5.png)
+
+Thông thường, chúng ta có thể xem thông tin người dùng theo id nên thử thêm `/1` vào endpoint `/api/user`.
+
+Thành công, chúng ta đã xem được note chứa flag của người dùng `admin`.
+
+![image](images/api-broken-access/image-6.png)

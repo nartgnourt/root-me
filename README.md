@@ -202,3 +202,29 @@ $password="OCCY9AcNm1tj";
 Có được username cùng với password, chúng ta có thể đăng nhập thành công.
 
 ![image](images/backup-file/image-2.png)
+
+## HTTP - Directory indexing
+
+> CTRL+U...
+
+Khi truy cập trang web, chúng ta sẽ chẳng thấy gì. Tuy nhiên, nếu chúng ta xem HTML source của trang sẽ thấy một phần comment thú vị.
+
+![image](images/http-directory-indexing/image-1.png)
+
+Theo đường dẫn tới file `pass.html` cũng không có password cho chúng ta.
+
+![image](images/http-directory-indexing/image-2.png)
+
+Nhưng sẽ ra sao nếu chúng ta chỉ vào `admin`?
+
+Bùm! Chúng ta thấy file và thư mục trong folder `admin`. Đáng chú ý là có một thư mục `backup`.
+
+![image](images/http-directory-indexing/image-3.png)
+
+Và khi truy cập thư mục `backup`, chúng ta thấy có file `admin.txt`.
+
+![image](images/http-directory-indexing/image-4.png)
+
+Cuối cùng, truy cập vào file `admin.txt`, chúng ta sẽ lấy được password.
+
+![image](images/http-directory-indexing/image-5.png)

@@ -182,7 +182,7 @@ python3 dirsearch.py -w ~/wordlists/backup_files_only.txt -u http://challenge01.
 Sau khi thực hiện lệnh trên, chúng ta nhận thấy server có một file `index.php~`.
 
 ```text
-[11:23:48] 200 -   843B - /web-serveur/ch11/index.php~                      
+[11:23:48] 200 -   843B - /web-serveur/ch11/index.php~
 ```
 
 Tiếp theo, chúng ta sẽ lấy nội dung của file đó bằng lệnh `curl`.
@@ -228,3 +228,21 @@ Và khi truy cập thư mục `backup`, chúng ta thấy có file `admin.txt`.
 Cuối cùng, truy cập vào file `admin.txt`, chúng ta sẽ lấy được password.
 
 ![image](images/http-directory-indexing/image-5.png)
+
+## HTTP - Headers
+
+> HTTP response give informations
+>
+> Get an administrator access to the webpage.
+
+Truy cập vào thử thách, chúng ta thấy một dòng chữ bảo rằng nội dung của trang web không phải là phần duy nhất ở trong HTTP response:
+
+![image](images/http-headers/image-1.png)
+
+Nếu chúng ta quan sát response trong Burp Suite sẽ thấy có header `Header-RootMe-Admin`:
+
+![image](images/http-headers/image-2.png)
+
+Vậy, chúng ta sẽ thêm header đó vào trong request để nhận được password:
+
+![image](images/http-headers/image-3.png)

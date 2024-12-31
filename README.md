@@ -268,3 +268,32 @@ Bên dưới là POST request khi chúng ta nhấn nút đó. Có thể thấy l
 Vậy chúng ta có thể thay đổi giá trị của tham số `score` thành `1000000` và gửi lại request để lấy được flag.
 
 ![image](images/http-post/image-4.png)
+
+## HTTP - Improper redirect
+
+> Don’t trust your browser
+>
+> Get access to index.
+
+Khi bắt đầu thử thách, chúng ta sẽ thấy giao diện trang web như sau:
+
+![image](images/http-improper-redirect/image-1.png)
+
+Nó bắt chúng ta phải đăng nhập. Tuy nhiên, tên của thử thách liên quan tới redirect, có lẽ chúng ta đang được chuyển tới trang `login.php` từ `index.php`.
+
+Vậy chúng ta có thể thực hiện lệnh `curl` tới `http://challenge01.root-me.org/web-serveur/ch32/` để không bị redirect. Từ đó có được flag:
+
+```text
+$ curl http://challenge01.root-me.org/web-serveur/ch32/
+<html>
+<body><link rel='stylesheet' property='stylesheet' id='s' type='text/css' href='/template/s.css' media='all' /><iframe id='iframe' src='https://www.root-me.org/?page=externe_header'></iframe>
+<h1>Welcome !</h1>
+
+<p>Yeah ! The redirection is OK, but without exit() after the header('Location: ...'), PHP just continue the execution and send the page content !...</p>
+<p><a href="http://cwe.mitre.org/data/definitions/698.html">CWE-698: Execution After Redirect (EAR)</a></p>
+<p>The flag is : ExecutionAfterRedirectIsBad
+</p>
+</body>
+</html>
+
+```

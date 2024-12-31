@@ -246,3 +246,25 @@ Nếu chúng ta quan sát response trong Burp Suite sẽ thấy có header `Head
 Vậy, chúng ta sẽ thêm header đó vào trong request để nhận được password:
 
 ![image](images/http-headers/image-3.png)
+
+## HTTP - POST
+
+> Do you know HTTP?
+>
+> Find a way to beat the top score!
+
+Thử thách này yêu cầu chúng ta phải có score lớn hơn `999999` mới lấy được flag.
+
+![image](images/http-post/image-1.png)
+
+Khi nhấn "Give a try!", chúng ta sẽ có một score ngẫu nhiên nhỏ hơn `999999` và chúng ta thua.
+
+![image](images/http-post/image-2.png)
+
+Bên dưới là POST request khi chúng ta nhấn nút đó. Có thể thấy là score đang được truyền vào tham số `score`.
+
+![image](images/http-post/image-3.png)
+
+Vậy chúng ta có thể thay đổi giá trị của tham số `score` thành `1000000` và gửi lại request để lấy được flag.
+
+![image](images/http-post/image-4.png)

@@ -297,3 +297,23 @@ $ curl http://challenge01.root-me.org/web-serveur/ch32/
 </html>
 
 ```
+
+## HTTP - Verb tampering
+
+> HTTP authentication
+>
+> Bypass the security establishment.
+
+Ở thử thách này, trang web sử dụng Basic Authentication, yêu cầu chúng ta đăng nhập để có quyền truy cập.
+
+![image](images/http-verb-tampering/image-1.png)
+
+Chúng ta có thể thử đăng nhập với `admin:admin` nhưng sẽ không thành công.
+
+![image](images/http-verb-tampering/image-2.png)
+
+Tên thử thách cũng đã gợi ý là chúng ta cần thay đổi request method.
+
+Ở đây, chúng ta sẽ sử dụng method `OPTIONS` để bypass thành công và nhận được password:
+
+![image](images/http-verb-tampering/image-3.png)

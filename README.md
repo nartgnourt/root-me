@@ -362,3 +362,29 @@ Truy cập vào `/web-serveur/ch6/phpbb/install/`, chúng ta có một file `ins
 Vào file `install.php`, chúng ta lụm được mật khẩu:
 
 ![image](images/install-files/image-5.png)
+
+## Nginx - Alias Misconfiguration
+
+> Off By Slash
+>
+> Our company’s web developer has finished developing the new intranet.\
+> Mission: You must assess the security of this site before it goes live.
+
+![image](images/nginx-alias-misconfiguration/image-1.png)
+
+Thử thách này liên quan đến việc khai thác việc cấu hình sai Nginx alias dẫn đến lỗ hổng Path Traversal. Chúng ta có thể tìm kiếm được một số bài viết liên quan:
+
+- <https://book.hacktricks.wiki/en/network-services-pentesting/pentesting-web/nginx.html#alias-lfi-misconfiguration>
+- <https://www.acunetix.com/vulnerabilities/web/path-traversal-via-misconfigured-nginx-alias/>
+
+Xem HTML source code, chúng ta thấy có phần comment đề cập tới `/assets/`:
+
+![image](images/nginx-alias-misconfiguration/image-2.png)
+
+Truy cập vào `/assets../`, chúng ta có thể xem được các files và thư mục:
+
+![image](images/nginx-alias-misconfiguration/image-3.png)
+
+Nhấn vào "flag.txt", chúng ta đọc được flag:
+
+![image](images/nginx-alias-misconfiguration/image-4.png)

@@ -317,3 +317,48 @@ Tên thử thách cũng đã gợi ý là chúng ta cần thay đổi request me
 Ở đây, chúng ta sẽ sử dụng method `OPTIONS` để bypass thành công và nhận được password:
 
 ![image](images/http-verb-tampering/image-3.png)
+
+## Install files
+
+> You know phpBB ?
+
+Vào thử thách, chúng ta có một trang web trống trơn:
+
+![image](images/install-files/image-1.png)
+
+Xem HTML source code, chúng ta thấy có một đường dẫn `/web-serveur/ch6/phpbb`:
+
+![image](images/install-files/image-2.png)
+
+Truy cập vào `/web-serveur/ch6/phpbb` nhưng lại không có gì:
+
+![image](images/install-files/image-3.png)
+
+Sử dụng [dirsearch](https://github.com/maurosoria/dirsearch), chúng ta có thể tìm ra đường dẫn `/web-serveur/ch6/phpbb/install/`:
+
+```text
+$ python3 dirsearch.py -x 403 -u http://challenge01.root-me.org/web-serveur/ch6/phpbb
+
+  _|. _ _  _  _  _ _|_    v0.4.3
+ (_||| _) (/_(_|| (_| )
+
+Extensions: php, asp, aspx, jsp, html, htm | HTTP method: GET | Threads: 25 | Wordlist size: 12266
+
+Target: http://challenge01.root-me.org/
+
+[10:38:09] Scanning: web-serveur/ch6/phpbb/
+[10:40:25] 200 -   295B - /web-serveur/ch6/phpbb/index.html
+[10:40:27] 301 -   162B - /web-serveur/ch6/phpbb/install  ->  http://challenge01.root-me.org/web-serveur/ch6/phpbb/install/
+[10:40:27] 200 -   12KB - /web-serveur/ch6/phpbb/install/
+CTRL+C detected: Pausing threads, please wait...
+
+Task Completed
+```
+
+Truy cập vào `/web-serveur/ch6/phpbb/install/`, chúng ta có một file `install.php`:
+
+![image](images/install-files/image-4.png)
+
+Vào file `install.php`, chúng ta lụm được mật khẩu:
+
+![image](images/install-files/image-5.png)

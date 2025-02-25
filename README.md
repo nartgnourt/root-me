@@ -452,3 +452,21 @@ Chúng ta sẽ khai thác lỗ hổng Mass Assignment tại endpoint `/api/user`
 Giờ, chúng ta sẽ lụm flag thành công nếu truy cập vào endpoint `/api/flag`:
 
 ![image](images/api-mass-assignment/image-14.png)
+
+## CRLF
+
+> Inject false data in the journalisation log.
+
+Vào thử thách, chúng ta có một trang web yêu cầu đăng nhập để xác thực và hiển thị nội dung log:
+
+![image](images/crlf/image-1.png)
+
+Đăng nhập thử `foo:bar`, chúng ta thấy thông báo người dùng đăng nhập được ghi vào log:
+
+![image](images/crlf/image-2.png)
+
+Như tên thử thách sẽ liên quan tới [CRLF Injection](https://book.hacktricks.wiki/en/pentesting-web/crlf-0d-0a.html#crlf-0d0a-injection), khai thác bằng cách chèn ký tự `%0D%0A` vào input để làm thay đổi log.
+
+Cộng thêm việc trong log chúng ta thấy chuỗi "admin authenticated." nên hiểu rằng cần tạo một log như vậy để xác thực thành công. Chúng ta sẽ tiến hành khai thác bằng cách thêm `admin+authenticated.%0D%0Ahello` vào tham số `username` bởi giá trị của tham số này đang được ghi vào log:
+
+![image](images/crlf/image-3.png)

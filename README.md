@@ -388,3 +388,67 @@ Truy cập vào `/assets../`, chúng ta có thể xem được các files và th
 Nhấn vào "flag.txt", chúng ta đọc được flag:
 
 ![image](images/nginx-alias-misconfiguration/image-4.png)
+
+## API - Mass Assignment
+
+> Anyway, I had no further use for it.
+>
+> Your friend thanks you for your previous vulnerability report, and assures you that this time he has removed the possibility of accessing notes, and has even created an administration role!
+
+Vào URL của thử thách, chúng ta có giao diện API Documentation như sau:
+
+![image](images/api-mass-assignment/image-1.png)
+
+API có 5 endpoints, chúng ta sẽ lần lượt xem qua chức năng ở từng endpoint.
+
+Tại endpoint `/api/signup`, cho phép chúng ta tạo một người dùng với `username` và `password`:
+
+![image](images/api-mass-assignment/image-2.png)
+
+Tại endpoint `/api/login`, thực hiện đăng nhập với thông tin tài khoản:
+
+![image](images/api-mass-assignment/image-3.png)
+
+Tại endpoint `/api/user`, chúng ta có thể xem thông tin về người dùng:
+
+![image](images/api-mass-assignment/image-4.png)
+
+Tại endpoint `/api/note`, cho phép cập nhật ghi chú của người dùng với nội dung ở tham số `note`:
+
+![image](images/api-mass-assignment/image-5.png)
+
+Và ở endpoint `/api/flag`, cho phép lấy flag nếu chúng ta là admin:
+
+![image](images/api-mass-assignment/image-6.png)
+
+Tiến hành khai thác, chúng ta sẽ đăng ký một người dùng có `username` là `foo` và `password` là `bar`:
+
+![image](images/api-mass-assignment/image-7.png)
+
+Khi đăng nhập thành công, chúng ta được cấp một cookie `session` để có thể truy cập vào các endpoints còn lại:
+
+![image](images/api-mass-assignment/image-8.png)
+
+Khi gửi GET request tới `/api/user`, nhận về kết quả chứa một số thông tin của người dùng, chúng ta sẽ chú ý tới `"status":"guest"`:
+
+![image](images/api-mass-assignment/image-9.png)
+
+Thử chức năng cập nhật ghi chú, không có gì đặc biệt:
+
+![image](images/api-mass-assignment/image-10.png)
+
+Truy cập vào `/api/flag`, chúng ta xác định cần phải là admin mới có thể lụm flag:
+
+![image](images/api-mass-assignment/image-11.png)
+
+Quay trở lại endpoint `/api/user`, nếu chúng ta gửi request với method `OPTIONS` sẽ thấy server còn hỗ trợ thêm method `PUT`:
+
+![image](images/api-mass-assignment/image-12.png)
+
+Chúng ta sẽ khai thác lỗ hổng Mass Assignment tại endpoint `/api/user` bằng cách thêm `{"status":"admin"}` vào request body, chú ý thêm header `Content-Type: application/json`:
+
+![image](images/api-mass-assignment/image-13.png)
+
+Giờ, chúng ta sẽ lụm flag thành công nếu truy cập vào endpoint `/api/flag`:
+
+![image](images/api-mass-assignment/image-14.png)

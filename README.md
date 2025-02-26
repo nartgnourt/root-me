@@ -470,3 +470,34 @@ Như tên thử thách sẽ liên quan tới [CRLF Injection](https://book.hackt
 Cộng thêm việc trong log chúng ta thấy chuỗi "admin authenticated." nên hiểu rằng cần tạo một log như vậy để xác thực thành công. Chúng ta sẽ tiến hành khai thác bằng cách thêm `admin+authenticated.%0D%0Ahello` vào tham số `username` bởi giá trị của tham số này đang được ghi vào log:
 
 ![image](images/crlf/image-3.png)
+
+## File upload - Double extensions
+
+> Your goal is to hack this photo galery by uploading PHP code.\
+> Retrieve the validation password in the file .passwd at the root of the application.
+
+Vào thử thách, chúng ta có một trang web cho phép xem thư viện ảnh và tải lên ảnh:
+
+![image](images/file-upload-double-extensions/image-1.png)
+
+Nhấn "upload" để hiển thị giao diện tải lên ảnh:
+
+![image](images/file-upload-double-extensions/image-2.png)
+
+![image](images/file-upload-double-extensions/image-3.png)
+
+Chúng ta sẽ bắt đầu bằng cách tải lên một tấm ảnh thông thường:
+
+![image](images/file-upload-double-extensions/image-4.png)
+
+Bên dưới là POST request để tải lên file, nếu chúng ta cố gắng tải lên PHP webshell với tên file `shell.php` sẽ nhận về thông báo "Wrong file extension !":
+
+![image](images/file-upload-double-extensions/image-5.png)
+
+Do tên challenge đề cập tới sử dụng "Double extensions" nên chúng ta sử dụng tên file là `shell.php.png` sẽ bypass thành công:
+
+![image](images/file-upload-double-extensions/image-6.png)
+
+Truy cập vào webshell, chúng ta đọc password với lệnh `cat ../../../.passwd`:
+
+![image](images/file-upload-double-extensions/image-7.png)

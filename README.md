@@ -501,3 +501,34 @@ Do tên challenge đề cập tới sử dụng "Double extensions" nên chúng 
 Truy cập vào webshell, chúng ta đọc password với lệnh `cat ../../../.passwd`:
 
 ![image](images/file-upload-double-extensions/image-7.png)
+
+## File upload - MIME type
+
+> Your goal is to hack this photo galery by uploading PHP code.\
+> Retrieve the validation password in the file .passwd.
+
+Chúng ta tiếp tục có một trang web cho phép xem ảnh và tải lên ảnh:
+
+![image](images/file-upload-mime-type/image-1.png)
+
+Nhấn vào "upload" để sử dụng tính năng tải lên ảnh:
+
+![image](images/file-upload-mime-type/image-2.png)
+
+![image](images/file-upload-mime-type/image-3.png)
+
+Tiến hành tải lên một ảnh thông thường để lấy request:
+
+![image](images/file-upload-mime-type/image-4.png)
+
+Lấy lại request chúng ta tải file lên trước đó để khai thác. Do giá trị của header `Content-Type` đã là `image/png` nên chúng ta chỉ cần thay đổi tên file thành `shell.php` và nội dung:
+
+![image](images/file-upload-mime-type/image-5.png)
+
+Quay trở lại trình duyệt, chúng ta sẽ thấy các files vừa tải lên được hiển thị:
+
+![image](images/file-upload-mime-type/image-6.png)
+
+Thực hiện mở webshell ở một tab mới để thực thi lệnh, chúng ta dùng lệnh `cat ../../../.passwd` để đọc thành công password:
+
+![image](images/file-upload-mime-type/image-7.png)

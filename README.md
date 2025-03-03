@@ -726,3 +726,33 @@ index e11aad2..663fe35 100644
 -       $password = "s3cureP@ssw0rd";
 +       $password = "0c25a741349bfdcc1e579c8cd4a931fca66bdb49b9f042c4d92ae1bfa3176d8c";
 ```
+
+## JWT - Introduction
+
+> Secure token exchange
+>
+> To validate the challenge, connect as admin.
+
+Vào thử thách, chúng ta có một trang web cho phép đăng nhập như sau:
+
+![image](images/jwt-introduction/image-1.png)
+
+Khi nhấn "Login as Guest!", chúng ta đăng nhập thành công với người dùng `guest`:
+
+![image](images/jwt-introduction/image-2.png)
+
+Chúng ta được cấp một cookie `jwt` chứa chuỗi JWT có trường `username` là `guest`:
+
+![image](images/jwt-introduction/image-3.png)
+
+Chúng ta sẽ khai thác sử dụng None Algorithm. Trước tiên, đổi giá trị của `alg` trong header của JWT thành `none`:
+
+![image](images/jwt-introduction/image-4.png)
+
+Giờ ở trong phần payload của JWT, chúng ta đổi `guest` thành `admin`:
+
+![image](images/jwt-introduction/image-5.png)
+
+Xoá bỏ đi phần signature và gửi lại request, chúng ta sẽ thấy được flag:
+
+![image](images/jwt-introduction/image-6.png)

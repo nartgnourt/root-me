@@ -756,3 +756,40 @@ Giờ ở trong phần payload của JWT, chúng ta đổi `guest` thành `admin
 Xoá bỏ đi phần signature và gửi lại request, chúng ta sẽ thấy được flag:
 
 ![image](images/jwt-introduction/image-6.png)
+
+## XSS - Server Side
+
+> Who said XSS was only for the client side?
+> This platform for issuing certificates of participation has just gone live. The developers assure you that they have followed best practices and escaped all user inputs before using them in their code...
+>
+> The flag is located in the `/flag.txt` file.
+
+Vào thử thách, chúng ta có trang web như sau:
+
+![image](images/xss-server-side/image-1.png)
+
+Chúng ta sẽ thực hiện đăng ký tài khoản và đăng nhập để kiểm tra tại trường nào dính lỗ hổng XSS:
+
+![image](images/xss-server-side/image-2.png)
+
+![image](images/xss-server-side/image-3.png)
+
+Tại giao diện bên trên, nhập thử "hello" và nhấn "Generate", chúng ta nhận được một file PDF, giá trị ở trường "First name" và "Last name" đã thành chữ đậm. Do đó, tại 2 trường này chúng ta có thể khai thác XSS:
+
+![image](images/xss-server-side/image-4.png)
+
+Tìm kiếm Google về khai thác server-side XSS, chúng ta có thể thấy bài viết <https://fluidattacks.com/advisories/relsb/> kèm payload:
+
+![image](images/xss-server-side/image-5.png)
+
+Tiến hành khai thác, chúng ta tạo một tài khoản mới và có thể nhập payload dưới vào trường "First name":
+
+```html
+<script>xhr = new XMLHttpRequest;  xhr.onload=function(){document.write((this.responseText))};  xhr.open("GET","file:///flag.txt");  xhr.send();</script>
+```
+
+![image](images/xss-server-side/image-6.png)
+
+Cuối cùng, đăng nhập để tạo file PDF, chúng ta thấy đọc được nội dung của file `/flag.txt`:
+
+![image](images/xss-server-side/image-7.png)

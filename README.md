@@ -793,3 +793,37 @@ Tiến hành khai thác, chúng ta tạo một tài khoản mới và có thể 
 Cuối cùng, đăng nhập để tạo file PDF, chúng ta thấy đọc được nội dung của file `/flag.txt`:
 
 ![image](images/xss-server-side/image-7.png)
+
+## Directory traversal
+
+> Photo gallery v 0.01
+>
+> Find the hidden section of the photo galery.
+
+Vào thử thách, chúng ta thấy nó cho phép xem ảnh được phân loại theo danh mục:
+
+![image](images/directory-traversal/image-1.png)
+
+Khi nhấn vào một danh mục nào đấy, ví dụ như "categories" thì chuỗi đó sẽ được truyền tới tham số `galerie`:
+
+![image](images/directory-traversal/image-2.png)
+
+Chúng ta thử bỏ giá trị của tham số `galerie` sẽ thấy xuất hiện thêm một mục `86hwnX2r`:
+
+![image](images/directory-traversal/image-3.png)
+
+Giờ thêm chuỗi `86hwnX2r` vào tham số `galerie` sẽ thấy xuất hiện file `password.txt`:
+
+![image](images/directory-traversal/image-4.png)
+
+Tuy nhiên, nếu chúng ta thêm `86hwnX2r/password.txt` vào tham số `galerie` sẽ không đọc được mật khẩu do server chỉ đang mở thư mục với hàm `opendir()`:
+
+![image](images/directory-traversal/image-5.png)
+
+Quay trở lại và mở một hình ảnh bất kỳ trên một tab mới, chúng ta thấy URL có dạng `http://challenge01.root-me.org/web-serveur/ch15/galerie/emotes/face-surprise.png`:
+
+![image](images/directory-traversal/image-6.png)
+
+Do đó, chúng ta truy cập vào `http://challenge01.root-me.org/web-serveur/ch15/galerie/86hwnX2r/password.txt` sẽ lấy mật khẩu thành công:
+
+![image](images/directory-traversal/image-7.png)

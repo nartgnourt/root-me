@@ -827,3 +827,35 @@ Quay trở lại và mở một hình ảnh bất kỳ trên một tab mới, ch
 Do đó, chúng ta truy cập vào `http://challenge01.root-me.org/web-serveur/ch15/galerie/86hwnX2r/password.txt` sẽ lấy mật khẩu thành công:
 
 ![image](images/directory-traversal/image-7.png)
+
+## File upload - Null byte
+
+> Gallery v0.04
+>
+> Your goal is to hack this photo galery by uploading PHP code.
+
+Truy cập vào thử thách, chúng ta có một trang web cho phép xem ảnh và tải lên ảnh:
+
+![image](images/file-upload-null-byte/image-1.png)
+
+Mục tiêu của thử thách là tải lên PHP code để thực thi mã tuỳ ý và lấy mật khẩu. Vậy, chúng ta nhấn vào "upload" để sử dụng tính năng tải lên ảnh:
+
+![image](images/file-upload-null-byte/image-2.png)
+
+Tải lên một tấm ảnh thông thường để lấy request:
+
+![image](images/file-upload-null-byte/image-3.png)
+
+![image](images/file-upload-null-byte/image-4.png)
+
+Nếu chúng ta thử tải lên một file `shell.php` sẽ thấy báo extension sai:
+
+![image](images/file-upload-null-byte/image-5.png)
+
+Bởi vì tên thử thách cũng đã gợi ý, chúng ta có thể sử dụng null byte (`%00`) để ngắt bỏ phần extension hợp lệ phía sau. Vậy sử dụng tên file là `shell.php%00.png` chúng ta sẽ bypass thành công:
+
+![image](images/file-upload-null-byte/image-6.png)
+
+Trở lại trình duyệt và truy cập vào file PHP vừa tải lên, chúng ta nhận được mật khẩu:
+
+![image](images/file-upload-null-byte/image-7.png)

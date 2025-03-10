@@ -1049,3 +1049,41 @@ eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiYWRtaW4ifQ.y9GHxQbH70x_S8F_VPAj
 Gửi lại request với token vừa tạo, chúng ta lụm được flag:
 
 ![image](images/jwt-weak-secret/image-6.png)
+
+## JWT - Unsecure File Signature
+
+> (K)ind (I)dentification (D)ance
+>
+> A previous Root Me administrator is trying to replicate the website after being banned for sharing challenge solutions. Try to find out if he is hiding any other flags on his new website.
+
+Vào thử thách, chúng ta có một trang web thú vị sau:
+
+![image](images/jwt-unsecure-file-signature/image-1.png)
+
+Truy cập vào `/admin`, server bảo chúng ta không phải là admin:
+
+![image](images/jwt-unsecure-file-signature/image-2.png)
+
+Kiểm tra request, chúng ta thấy có một cookie `session` JWT với giá trị của `user` là `guest`. Vậy có thể hiểu chúng ta cần thay đổi giá trị của trường này thành `admin` để xác thực thành công:
+
+![image](images/jwt-unsecure-file-signature/image-3.png)
+
+Cùng kiểm tra header của JWT, chúng ta thấy nó sử dụng trường `kid` để lấy secret key:
+
+![image](images/jwt-unsecure-file-signature/image-4.png)
+
+Vậy, chúng ta có thể khai thác bằng cách sử dụng secret là null (Base64 encoded `AA`) và thay giá trị của trường `kid` thành `....//....//....//....//dev/null` để trỏ tới file `/dev/null` do server thay thế `../` thành rỗng:
+
+![image](images/jwt-unsecure-file-signature/image-5.png)
+
+![image](images/jwt-unsecure-file-signature/image-6.png)
+
+```text
+eyJhbGciOiJIUzI1NiIsImtpZCI6Ii4uLi4vLy4uLi4vLy4uLi4vLy4uLi4vL2Rldi9udWxsIiwidHlwIjoiSldUIn0.eyJ1c2VyIjoiYWRtaW4iLCJpYXQiOjE3NDE2MTkyNTF9.rV-4_zyXC7rug9Ud7zQcd22rPDjhLRDcyvKV1AYE_p0
+```
+
+![image](images/jwt-unsecure-file-signature/image-7.png)
+
+Gửi request, chúng ta xác thực thành công và nhận được flag:
+
+![image](images/jwt-unsecure-file-signature/image-8.png)

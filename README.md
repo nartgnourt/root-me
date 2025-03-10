@@ -1001,3 +1001,51 @@ Nếu lấy token đó để xác thực khi truy cập vào route `/web-serveur
 Để bypass, chúng ta sẽ thêm vào padding là dấu `=` để khiến token JWT vẫn hợp lệ nhưng không thuộc blacklist:
 
 ![image](images/jwt-revoked-token/image-4.png)
+
+## JWT - Weak secret
+
+> Use the force
+> This API with its /hello endpoint (accessible with GET) seems rather welcoming at first glance but is actually trying to play a trick on you.
+>
+> Manage to recover its most valuable secrets!
+
+Vào thử thách, chúng ta thấy chuỗi JSON nói rằng cần truy cập tới `/token` để nhận token và sử dụng token đó để truy cập tới `/admin`:
+
+![image](images/jwt-weak-secret/image-1.png)
+
+Gửi GET request tới `/web-serveur/ch59/token`, chúng ta nhận một token JWT:
+
+```text
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiZ3Vlc3QifQ.4kBPNf7Y6BrtP-Y3A-vQXPY9jAh_d0E6L4IUjL65CvmEjgdTZyr2ag-TM-glH6EYKGgO3dBYbhblaPQsbeClcw
+```
+
+![image](images/jwt-weak-secret/image-2.png)
+
+Tiếp tới gửi POST request tới `/web-serveur/ch59/admin`, chúng ta được hướng dẫn cách cung cấp token JWT đó là sử dụng header `Authorization`:
+
+![image](images/jwt-weak-secret/image-3.png)
+
+Thêm vào token và gửi lại request, chúng ta chưa nhận được flag do không phải `admin`:
+
+![image](images/jwt-weak-secret/image-4.png)
+
+Như tên thử thách là weak secret, chúng ta có thể thử brute-force secret. Sử dụng công cụ [jwt-cracker](https://github.com/lmammino/jwt-cracker), chúng ta nhanh chóng tìm ra secret là `lol`:
+
+```text
+$ jwt-cracker -d ~/wordlists/jwt-secrets.txt -t eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiZ3Vlc3QifQ.4kBPNf7Y6BrtP-Y3A-vQXPY9jAh_d0E6L4IUjL65CvmEjgdTZyr2ag-TM-glH6EYKGgO3dBYbhblaPQsbeClcw
+SECRET FOUND: lol
+Time taken (sec): 0.074
+Total attempts: 20000
+```
+
+Vậy, vào trang <https://jwt.io/> và sử dụng secret `lol` để sign một token mới với `role` là `admin`:
+
+```text
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiYWRtaW4ifQ.y9GHxQbH70x_S8F_VPAjra_S-nQ9MsRnuvwWFGoIyKXKk8xCcMpYljN190KcV1qV6qLFTNrvg4Gwyv29OCjAWA
+```
+
+![image](images/jwt-weak-secret/image-5.png)
+
+Gửi lại request với token vừa tạo, chúng ta lụm được flag:
+
+![image](images/jwt-weak-secret/image-6.png)

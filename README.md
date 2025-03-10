@@ -1087,3 +1087,39 @@ eyJhbGciOiJIUzI1NiIsImtpZCI6Ii4uLi4vLy4uLi4vLy4uLi4vLy4uLi4vL2Rldi9udWxsIiwidHlw
 Gửi request, chúng ta xác thực thành công và nhận được flag:
 
 ![image](images/jwt-unsecure-file-signature/image-8.png)
+
+## PHP - assert()
+
+> Read the doc!
+>
+> Find and exploit the vulnerability to read the file .passwd.
+
+![image](images/php-assert/image-1.png)
+
+Chúng ta có thể xem từng trang, ví dụ như ấn vào "About", giá trị `about` sẽ được sử dụng ở tham số `page`, gợi ra sự tồn tại của lỗ hổng LFI:
+
+![image](images/php-assert/image-2.png)
+
+Thử thay đổi giá trị của tham số `page` thành `../../../etc/passwd`, chúng ta thấy cảnh báo assertion:
+
+![image](images/php-assert/image-3.png)
+
+Có thể hình dung code phía server sẽ như sau:
+
+```php
+<?php
+if (isset($_GET['page'])) {
+    $page = $_GET['page'];
+} else {
+    $page = "home";
+}
+$file = "includes/" . $page . ".php";
+assert("strpos('$file', '..') === false") or die("Detected hacking attempt!");
+
+```
+
+Việc sử dụng hàm `assert()` với input không được kiểm soát kỹ lưỡng sẽ cho phép chúng ta thực thi mã tuỳ ý. Chúng ta hoàn toàn có thể thoát khỏi dấu `'` để chèn thêm code mới.
+
+Với payload `' and die(highlight_file('.passwd')) or '`, chúng ta sẽ đọc được nội dung file `.passwd`:
+
+![image](images/php-assert/image-4.png)

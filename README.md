@@ -859,3 +859,145 @@ Bởi vì tên thử thách cũng đã gợi ý, chúng ta có thể sử dụng
 Trở lại trình duyệt và truy cập vào file PHP vừa tải lên, chúng ta nhận được mật khẩu:
 
 ![image](images/file-upload-null-byte/image-7.png)
+
+## JWT - Revoked token
+
+> Revoked or not
+>
+> Two endpoints are available :
+>
+> - POST : /web-serveur/ch63/login
+> - GET : /web-serveur/ch63/admin
+>
+> Get an access to the admin endpoint.
+
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+from flask import Flask, request, jsonify
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, decode_token
+import datetime
+#from apscheduler.schedulers.background import BackgroundScheduler
+import threading
+import jwt
+from config import *
+
+# Setup flask
+app = Flask(__name__)
+    
+app.config['JWT_SECRET_KEY'] = SECRET
+jwtmanager = JWTManager(app)
+blacklist = set()
+lock = threading.Lock()
+    
+# Free memory from expired tokens, as they are no longer useful
+def delete_expired_tokens():
+    with lock:
+        to_remove = set()
+        global blacklist
+        for access_token in blacklist:
+            try:
+                jwt.decode(access_token, app.config['JWT_SECRET_KEY'],algorithm='HS256')
+            except:
+                to_remove.add(access_token)
+        
+        blacklist = blacklist.difference(to_remove)
+    
+@app.route("/web-serveur/ch63/")
+def index():
+    return "POST : /web-serveur/ch63/login <br>\nGET : /web-serveur/ch63/admin"
+    
+# Standard login endpoint
+@app.route('/web-serveur/ch63/login', methods=['POST'])
+def login():
+    try:
+        username = request.json.get('username', None)
+        password = request.json.get('password', None)
+    except:
+        return jsonify({"msg":"""Bad request. Submit your login / pass as {"username":"admin","password":"admin"}"""}), 400
+    
+    if username != 'admin' or password != 'admin':
+        return jsonify({"msg": "Bad username or password"}), 401
+    
+    access_token = create_access_token(identity=username,expires_delta=datetime.timedelta(minutes=3))
+    ret = {
+        'access_token': access_token,
+    }
+    
+    with lock:
+        blacklist.add(access_token)
+    
+    return jsonify(ret), 200
+    
+# Standard admin endpoint
+@app.route('/web-serveur/ch63/admin', methods=['GET'])
+@jwt_required
+def protected():
+    access_token = request.headers.get("Authorization").split()[1]
+    with lock:
+        if access_token in blacklist:
+            return jsonify({"msg":"Token is revoked"})
+        else:
+            return jsonify({'Congratzzzz!!!_flag:': FLAG})
+    
+    
+if __name__ == '__main__':
+    scheduler = BackgroundScheduler()
+    job = scheduler.add_job(delete_expired_tokens, 'interval', seconds=10)
+    scheduler.start()
+    app.run(debug=False, host='0.0.0.0', port=5000)
+
+```
+
+![image](images/jwt-revoked-token/image-1.png)
+
+Ở thử thách này, chúng ta có source code. Mục tiêu là cần cung cấp một `access_token` JWT hợp lệ, không nằm trong blacklist ở header `Authorization` khi truy cập vào route `/web-serveur/ch63/admin` để lấy flag.
+
+```python
+@app.route('/web-serveur/ch63/admin', methods=['GET'])
+@jwt_required
+def protected():
+    access_token = request.headers.get("Authorization").split()[1]
+    with lock:
+        if access_token in blacklist:
+            return jsonify({"msg":"Token is revoked"})
+        else:
+            return jsonify({'Congratzzzz!!!_flag:': FLAG})
+```
+
+Tại route `/web-serveur/ch63/login`, chúng ta có thể gửi `POST` request để cung cấp `username` và `password` là `admin` ở định dạng JSON và nhận được một access token JWT, token này sau đó được thêm ngay vào blacklist:
+
+```python
+@app.route('/web-serveur/ch63/login', methods=['POST'])
+def login():
+    try:
+        username = request.json.get('username', None)
+        password = request.json.get('password', None)
+    except:
+        return jsonify({"msg":"""Bad request. Submit your login / pass as {"username":"admin","password":"admin"}"""}), 400
+    
+    if username != 'admin' or password != 'admin':
+        return jsonify({"msg": "Bad username or password"}), 401
+    
+    access_token = create_access_token(identity=username,expires_delta=datetime.timedelta(minutes=3))
+    ret = {
+        'access_token': access_token,
+    }
+    
+    with lock:
+        blacklist.add(access_token)
+    
+    return jsonify(ret), 200
+```
+
+Vậy để khai thác, trước tiên chúng ta cần tạo một access token:
+
+![image](images/jwt-revoked-token/image-2.png)
+
+Nếu lấy token đó để xác thực khi truy cập vào route `/web-serveur/ch63/admin`, chúng ta sẽ không thể nhận được flag do token đã nằm trong blacklist:
+
+![image](images/jwt-revoked-token/image-3.png)
+
+Để bypass, chúng ta sẽ thêm vào padding là dấu `=` để khiến token JWT vẫn hợp lệ nhưng không thuộc blacklist:
+
+![image](images/jwt-revoked-token/image-4.png)

@@ -1158,3 +1158,29 @@ SetHandler application/x-httpd-php
 Vào `/uploads/8vfnu8g22gppb9r7d8quqekl4u/.htaccess?c=cat ../../private/flag.txt`, chúng ta lấy được flag:
 
 ![image](images/php-apache-configuration/image-3.png)
+
+## PHP - Filters
+
+> FileManager v 0.01
+>
+> Retrieve the administrator password of this application.
+
+![image](images/php-filters/image-1.png)
+
+Nhấn vào "login", chúng ta thấy file `login.php` được thêm vào tham số `inc` để hiển thị lên giao diện đăng nhập:
+
+![image](images/php-filters/image-2.png)
+
+Dễ thấy sự tồn tại của lỗ hổng LFI và tên thử thách cũng đã gợi ý "Filters" nên chúng ta sẽ sử dụng PHP wrapper `php://filter` để đọc nội dung file.
+
+Với payload `php://filter/convert.base64-encode/resource=login.php`, chúng ta đọc được nội dung của file `login.php` ở dạng Base64:
+
+![image](images/php-filters/image-3.png)
+
+Decode Base64 chuỗi được trả về, chúng ta biết được server có một file `config.php` chứa thông tin đăng nhập:
+
+![image](images/php-filters/image-4.png)
+
+Vậy tiếp tục đọc file `config.php` với `php://filter/convert.base64-encode/resource=config.php`, chúng ta thấy được mật khẩu của admin:
+
+![image](images/php-filters/image-5.png)

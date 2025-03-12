@@ -1184,3 +1184,141 @@ Decode Base64 chuỗi được trả về, chúng ta biết được server có 
 Vậy tiếp tục đọc file `config.php` với `php://filter/convert.base64-encode/resource=config.php`, chúng ta thấy được mật khẩu của admin:
 
 ![image](images/php-filters/image-5.png)
+
+## PHP - register globals
+
+> It seems that the developper often leaves backup files around...
+
+Vào trang web, chúng ta được yêu cầu nhập mật khẩu để xác thực:
+
+![image](images/php-register-globals/image-1.png)
+
+Do mô tả nói rằng lập trình viên để lại backup files nên chúng ta đi tìm các files ẩn với công cụ [dirsearch](https://github.com/maurosoria/dirsearch), chúng ta thấy một file đặc biệt đó là `index.php.bak`:
+
+```text
+$ python3 dirsearch.py -u http://challenge01.root-me.org/web-serveur/ch17/ -x 403
+
+  _|. _ _  _  _  _ _|_    v0.4.3
+ (_||| _) (/_(_|| (_| )
+
+Extensions: php, asp, aspx, jsp, html, htm | HTTP method: GET | Threads: 25 | Wordlist size: 12266
+
+Target: http://challenge01.root-me.org/
+
+[14:20:26] Scanning: web-serveur/ch17/
+[14:22:33] 200 -     0B - /web-serveur/ch17/config.inc.php
+[14:23:22] 200 -   517B - /web-serveur/ch17/index.php
+[14:23:23] 200 -    1KB - /web-serveur/ch17/index.php.bak
+
+Task Completed
+```
+
+Nội dung của file `index.php.bak` như sau:
+
+```php
+<?php
+
+
+function auth($password, $hidden_password){
+    $res=0;
+    if (isset($password) && $password!=""){
+        if ( $password == $hidden_password ){
+            $res=1;
+        }
+    }
+    $_SESSION["logged"]=$res;
+    return $res;
+}
+
+
+
+function display($res){
+    $aff= '
+   <html>
+   <head>
+   </head>
+   <body>
+     <h1>Authentication v 0.05</h1>
+     <form action="" method="POST">
+       Password&nbsp;<br/>
+       <input type="password" name="password" /><br/><br/>
+       <br/><br/>
+       <input type="submit" value="connect" /><br/><br/>
+     </form>
+     <h3>'.htmlentities($res).'</h3>
+   </body>
+   </html>';
+    return $aff;
+}
+
+
+
+session_start();
+if ( ! isset($_SESSION["logged"]) )
+    $_SESSION["logged"]=0;
+
+$aff="";
+include("config.inc.php");
+
+if (isset($_POST["password"]))
+    $password = $_POST["password"];
+
+if (!ini_get('register_globals')) {
+    $superglobals = array($_SERVER, $_ENV,$_FILES, $_COOKIE, $_POST, $_GET);
+    if (isset($_SESSION)) {
+        array_unshift($superglobals, $_SESSION);
+    }
+    foreach ($superglobals as $superglobal) {
+        extract($superglobal, 0 );
+    }
+}
+
+if (( isset ($password) && $password!="" && auth($password,$hidden_password)==1) || (is_array($_SESSION) && $_SESSION["logged"]==1 ) ){
+    $aff=display("well done, you can validate with the password : $hidden_password");
+} else {
+    $aff=display("try again");
+}
+
+echo $aff;
+
+?>
+```
+
+Để lấy được mật khẩu ẩn và hoàn thành thử thách, chúng ta cần giá trị của `$_SESSION["logged"]` là `1`:
+
+```php
+if (( isset ($password) && $password!="" && auth($password,$hidden_password)==1) || (is_array($_SESSION) && $_SESSION["logged"]==1 ) ){
+    $aff=display("well done, you can validate with the password : $hidden_password");
+```
+
+Tập trung vào khối code bên dưới:
+
+```php
+if (!ini_get('register_globals')) {
+    $superglobals = array($_SERVER, $_ENV,$_FILES, $_COOKIE, $_POST, $_GET);
+    if (isset($_SESSION)) {
+        array_unshift($superglobals, $_SESSION);
+    }
+    foreach ($superglobals as $superglobal) {
+        extract($superglobal, 0 );
+    }
+}
+```
+
+Tiến hành debug để quan sát rõ ràng hơn, chúng ta thấy rằng, trong trường hợp không cấu hình `register_globals` thì mảng `$superglobals` chứa tất cả giá trị của các biến super globals `$_SERVER`, `$_ENV`, `$_FILES`, `$_COOKIE`, `$_POST`, và `$_GET`.
+
+Giá trị của biến `$_SESSION` sẽ được thêm vào đầu mảng `$superglobals` với hàm `array_unshift($superglobals, $_SESSION);`:
+
+![image](images/php-register-globals/image-2.png)
+
+Sau khi thực hiện lần lượt hàm `extract($superglobal, 0 );` thì các keys trong mảng `$superglobals` trở thành các biến global:
+
+![image](images/php-register-globals/image-3.png)
+
+Vậy, ý tưởng của chúng ta là tạo ra một mảng `_SESSION` có key `logged` mang giá trị `1` để ghì đè biến super global `$_SESSION` mặc định.
+
+Chúng ta có thể thêm `?_SESSION[logged]=1` vào URL để nó thành giá trị của biến `$_GET`. Do sử dụng toán tử `==` khi so sánh, gây ra lỗ hổng Type Juggling nên `"1" == 1` sẽ trả về `true`. Từ đó thoả mãn điều kiện và chúng ta nhận được mật khẩu:
+
+![image](images/php-register-globals/image-4.png)
+
+![image](images/php-register-globals/image-5.png)

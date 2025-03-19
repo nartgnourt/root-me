@@ -1322,3 +1322,18 @@ Chúng ta có thể thêm `?_SESSION[logged]=1` vào URL để nó thành giá t
 ![image](images/php-register-globals/image-4.png)
 
 ![image](images/php-register-globals/image-5.png)
+
+## Python - Server-side Template Injection Introduction
+
+> This service allows you to generate a web page. Use it to read the flag!
+
+Vào thử thách, chúng ta có trang web cho phép nhập dữ liệu vào 2 trường:
+
+![image](images/python-server-side-template-injection-introduction/image-1.png)
+So tên thử thách đề cập tới lỗ hổng SSTI ở Python nên chúng ta nhập thử payload `{{7*7}}` vào cả 2 trường để kiểm tra. Xác định được tại trường `content` dính lỗ hổng:
+
+![image](images/python-server-side-template-injection-introduction/image-2.png)
+
+Vậy sử dụng payload `{{lipsum.__globals__.os.popen('cat .passwd').read()}}`, chúng ta sẽ lụm được flag:
+
+![image](images/python-server-side-template-injection-introduction/image-3.png)
